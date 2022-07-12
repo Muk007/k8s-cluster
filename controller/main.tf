@@ -36,9 +36,7 @@ data "template_cloudinit_config" "controller" {
 
   part {
     content_type = "text/x-shellscript"
-    content      = templatefile("${path.module}/files/server-install.sh", {
-      name = var.vpc_name
-    })
+    content      = file("${path.module}/files/server-install.sh")
   }
 }
 
