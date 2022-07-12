@@ -33,9 +33,10 @@ sudo mv linux-amd64/helm /usr/local/bin/helm
 #export MASTER_SIZE="t3.medium"
 #export CLUSTER_NAME="mukesh.k8s"
 #export VPC_ID=`cat /tmp/vpc_id.txt`
-
+VPC=`aws ec2 describe-vpcs --region us-east-1 --filters Name=tag:Name,Values=${name}-local-vpc | jq -r .Vpcs[].VpcId`
+S3_BUCKET=`aws s3 ls | grep -i ${name} | awk '{print $3}'`
 ############ Create k8s cluster #############
 
-#kops create cluster --name=$CLUSTER_NAME --state=s3://$buck_name --node-count=$NODE_COUNT --node-size=$NODE_SIZE --master-count=$MASTER_COUNT --master-size=$MASTER_SIZE --vpc=$VPC_ID --zones=us-east-1b,us-east-1c --dns=private --yes
+kops create cluster --name=${name}.k8s  --state=s3://$S3_BUCKET --node-count=1 --node-size=t3.medium --master-count=1 --master-size=t2.small --vpc=$VPC --zones=us-east-1b,us-east-1c --dns=private --yes
 
-#kops update cluster --yes
+kops update cluster --name=${name}.k8s  --state=s3://$S3_BUCKET   --yes
